@@ -14,6 +14,7 @@ import Community from './pages/Community/Community';
 import Contact from './pages/Contact/Contact';
 import Guide from './pages/Help/Guide';
 import Videos from './pages/Help/Videos';
+import Footer from './components/common/Footer';
 
 // Private Pages (Require Login)
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -108,6 +109,7 @@ function App() {
             <Route path="/help/videos" element={<PublicRoute><Videos /></PublicRoute>} />
           </Routes>
         </main>
+        <Footer/>
         <Toaster 
           position="top-right" 
           toastOptions={{ 
