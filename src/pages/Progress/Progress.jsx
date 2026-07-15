@@ -1,146 +1,413 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
-  TrendingUp, 
-  BarChart3, 
-  LineChart,
-  Calendar,
-  Award,
-  Target,
-  Weight,
-  Ruler,
-  Dumbbell,
-  ChevronDown,
-  Plus,
-  ArrowUp,
-  ArrowDown,
-   Home,
-   User
+  TrendingUp, BarChart3, Calendar, Award, Target, 
+  Weight, Ruler, Dumbbell, Plus, Edit2, Trash2, 
+  Check, Home, User
 } from 'lucide-react';
+import { useProgress } from '../../hooks/useProgress';
+import Modal from '../../components/common/Modal';
+import Spinner from '../../components/common/Spinner';
 
 const Progress = () => {
-  const [timeRange, setTimeRange] = useState('week');
+  const { entries, analytics, loading, addEntry, editEntry, removeEntry } = useProgress();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [formData, setFormData] = useState({
+    weight: '',
+    bodyFat: '',
+    chest: '',
+    waist: '',
+    hips: '',
+    biceps: '',
+    thighs: '',
+    maxBenchPress: '',
+    maxSquat: '',
+    runTime: '',
+    notes: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
 
-  const stats = [
-    { label: 'Weight', value: '72.5 kg', change: '-1.2', icon: <Weight className="w-5 h-5" /> },
-    { label: 'Body Fat', value: '15.5%', change: '-0.8', icon: <Target className="w-5 h-5" /> },
-    { label: 'Muscle Mass', value: '35.2 kg', change: '+0.6', icon: <Dumbbell className="w-5 h-5" /> },
-    { label: 'BMI', value: '22.4', change: '-0.3', icon: <Ruler className="w-5 h-5" /> },
-  ];
+  const handleOpenModal = (entry = null) => {
+    if (entry) {
+      setEditingEntry(entry);
+      setFormData({
+        weight: entry.weight || '',
+        bodyFat: entry.bodyFat || '',
+        chest: entry.bodyMeasurements?.chest || '',
+        waist: entry.bodyMeasurements?.waist || '',
+        hips: entry.bodyMeasurements?.hips || '',
+        biceps: entry.bodyMeasurements?.biceps || '',
+        thighs: entry.bodyMeasurements?.thighs || '',
+        maxBenchPress: entry.performanceMetrics?.maxBenchPress || '',
+        maxSquat: entry.performanceMetrics?.maxSquat || '',
+        runTime: entry.performanceMetrics?.runTime || '',
+        notes: entry.notes || '',
+      });
+    } else {
+      setEditingEntry(null);
+      setFormData({
+        weight: '',
+        bodyFat: '',
+        chest: '',
+        waist: '',
+        hips: '',
+        biceps: '',
+        thighs: '',
+        maxBenchPress: '',
+        maxSquat: '',
+        runTime: '',
+        notes: '',
+      });
+    }
+    setIsModalOpen(true);
+  };
 
-  const weeklyData = [
-    { day: 'Mon', weight: 73.2, bodyFat: 16.0 },
-    { day: 'Tue', weight: 72.8, bodyFat: 15.8 },
-    { day: 'Wed', weight: 73.0, bodyFat: 15.9 },
-    { day: 'Thu', weight: 72.5, bodyFat: 15.5 },
-    { day: 'Fri', weight: 72.6, bodyFat: 15.6 },
-    { day: 'Sat', weight: 72.3, bodyFat: 15.4 },
-    { day: 'Sun', weight: 72.5, bodyFat: 15.5 },
-  ];
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingEntry(null);
+  };
 
-  const achievements = [
-    { icon: <Award className="w-5 h-5" />, label: '10 Workouts', progress: 100, completed: true },
-    { icon: <Target className="w-5 h-5" />, label: '5kg Lost', progress: 60, completed: false },
-    { icon: <TrendingUp className="w-5 h-5" />, label: '7 Day Streak', progress: 85, completed: false },
-  ];
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    const entryData = {
+      weight: parseFloat(formData.weight) || undefined,
+      bodyFat: parseFloat(formData.bodyFat) || undefined,
+      bodyMeasurements: {
+        chest: parseFloat(formData.chest) || undefined,
+        waist: parseFloat(formData.waist) || undefined,
+        hips: parseFloat(formData.hips) || undefined,
+        biceps: parseFloat(formData.biceps) || undefined,
+        thighs: parseFloat(formData.thighs) || undefined,
+      },
+      performanceMetrics: {
+        maxBenchPress: parseFloat(formData.maxBenchPress) || undefined,
+        maxSquat: parseFloat(formData.maxSquat) || undefined,
+        runTime: parseFloat(formData.runTime) || undefined,
+      },
+      notes: formData.notes || undefined,
+    };
+
+    let result;
+    if (editingEntry) {
+      result = await editEntry(editingEntry._id, entryData);
+    } else {
+      result = await addEntry(entryData);
+    }
+
+    setSubmitting(false);
+    if (result.success) {
+      handleCloseModal();
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this progress entry?')) {
+      await removeEntry(id);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#02020a] pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Progress 📊</h1>
-            <p className="text-gray-400 text-sm">Track your fitness journey</p>
-          </div>
-          <button className="bg-[#00ff00] text-[#02020a] px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] transition-all duration-300">
-            <Plus className="w-4 h-4" />
-            Log Progress
-          </button>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-[#00ff00]" />
+            Progress 📊
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">Track your fitness journey</p>
         </div>
+        <button 
+          onClick={() => handleOpenModal()}
+          className="bg-[#00ff00] text-[#02020a] px-4 py-2.5 rounded-xl font-semibold text-sm flex items-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,0,0.3)] transition-all duration-300 transform hover:scale-105"
+        >
+          <Plus className="w-4 h-4" />
+          Log Progress
+        </button>
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">{stat.label}</p>
-                  <p className="text-xl font-bold text-white">{stat.value}</p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-[#00ff00]/10 flex items-center justify-center text-[#00ff00]">
-                  {stat.icon}
-                </div>
-              </div>
-              <div className={`flex items-center gap-1 mt-1 text-sm ${stat.change.startsWith('+') ? 'text-[#00ff00]' : 'text-red-500'}`}>
-                {stat.change.startsWith('+') ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                <span>{stat.change}%</span>
-              </div>
+      {/* Stats Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Total Entries</p>
+              <p className="text-2xl font-bold text-white">{entries?.length || 0}</p>
             </div>
-          ))}
+            <div className="w-10 h-10 rounded-full bg-[#00ff00]/10 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-[#00ff00]" />
+            </div>
+          </div>
         </div>
+        <div className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Weight Trend</p>
+              <p className="text-2xl font-bold text-white">{analytics?.weightTrend || 0}%</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-orange-500" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Latest Weight</p>
+              <p className="text-2xl font-bold text-white">{entries?.[0]?.weight || 0} kg</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+              <Weight className="w-5 h-5 text-green-500" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Body Fat</p>
+              <p className="text-2xl font-bold text-white">{entries?.[0]?.bodyFat || 0}%</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+              <Target className="w-5 h-5 text-purple-500" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Weight Chart */}
-        <div className="bg-[#0a0a1a] rounded-2xl p-5 border border-[#00ff00]/10 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-semibold">Weight Tracking</h3>
-            <select 
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              className="bg-[#12121e] text-gray-400 text-sm rounded-xl px-3 py-1.5 border border-[#00ff00]/10 focus:border-[#00ff00] outline-none"
+      {/* Entries */}
+      <div className="space-y-4">
+        {entries?.length === 0 ? (
+          <div className="text-center py-16 bg-[#0a0a1a] rounded-2xl border border-[#00ff00]/10">
+            <BarChart3 className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white">No progress entries</h3>
+            <p className="text-gray-400 text-sm mt-1">Start tracking your progress</p>
+            <button 
+              onClick={() => handleOpenModal()}
+              className="mt-4 bg-[#00ff00] text-[#02020a] px-6 py-2 rounded-xl font-semibold inline-flex items-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,0,0.3)] transition-all duration-300"
             >
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </select>
+              <Plus className="w-4 h-4" />
+              Log Your First Progress
+            </button>
           </div>
-          <div className="flex items-end justify-between h-40 gap-2">
-            {weeklyData.map((data, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 flex-1">
-                <div 
-                  className="w-full bg-[#00ff00] rounded-t-lg transition-all duration-500"
-                  style={{ 
-                    height: `${(data.weight / 75) * 80}px`,
-                    opacity: data.weight > 72 ? 1 : 0.5
-                  }}
-                ></div>
-                <span className="text-xs text-gray-500">{data.day}</span>
-                <span className="text-xs text-gray-400">{data.weight}kg</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Achievements */}
-        <div className="bg-[#0a0a1a] rounded-2xl p-5 border border-[#00ff00]/10">
-          <h3 className="text-white font-semibold mb-4">Achievements</h3>
-          <div className="space-y-3">
-            {achievements.map((achievement, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl ${achievement.completed ? 'bg-[#00ff00]/20' : 'bg-[#12121e]'} flex items-center justify-center ${achievement.completed ? 'text-[#00ff00]' : 'text-gray-500'}`}>
-                  {achievement.icon}
-                </div>
-                <div className="flex-1">
-                  <p className="text-white text-sm font-medium">{achievement.label}</p>
-                  <div className="w-full h-1.5 bg-[#1a1a2e] rounded-full mt-1 overflow-hidden">
-                    <div 
-                      className="h-full bg-[#00ff00] rounded-full transition-all duration-500"
-                      style={{ width: `${achievement.progress}%` }}
-                    ></div>
+        ) : (
+          entries.map((entry) => (
+            <div key={entry._id} className="bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10 hover:border-[#00ff00]/30 transition-all duration-300 group">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#00ff00]/10 flex items-center justify-center text-[#00ff00]">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold">
+                      {new Date(entry.date).toLocaleDateString()}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-3 mt-1">
+                      {entry.weight && (
+                        <span className="text-xs text-gray-400">⚖️ Weight: {entry.weight}kg</span>
+                      )}
+                      {entry.bodyFat && (
+                        <span className="text-xs text-gray-400">📊 Body Fat: {entry.bodyFat}%</span>
+                      )}
+                      {entry.bodyMeasurements?.chest && (
+                        <span className="text-xs text-gray-400">📏 Chest: {entry.bodyMeasurements.chest}cm</span>
+                      )}
+                      {entry.bodyMeasurements?.waist && (
+                        <span className="text-xs text-gray-400">📏 Waist: {entry.bodyMeasurements.waist}cm</span>
+                      )}
+                    </div>
+                    {entry.notes && (
+                      <p className="text-xs text-gray-500 mt-1">{entry.notes}</p>
+                    )}
                   </div>
                 </div>
-                <span className="text-xs text-gray-400">{achievement.progress}%</span>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => handleOpenModal(entry)}
+                    className="p-2 text-gray-400 hover:text-[#00ff00] transition-colors rounded-xl hover:bg-[#00ff00]/10"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(entry._id)}
+                    className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-xl hover:bg-red-500/10"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-       
+            </div>
+          ))
+        )}
       </div>
+
+      {/* Modal */}
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+        title={editingEntry ? 'Edit Progress' : 'Log New Progress'}
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Weight (kg)</label>
+              <input
+                type="number"
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+                step="0.1"
+                className="w-full bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+                placeholder="72.5"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Body Fat (%)</label>
+              <input
+                type="number"
+                name="bodyFat"
+                value={formData.bodyFat}
+                onChange={handleChange}
+                step="0.1"
+                className="w-full bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+                placeholder="15.5"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">Body Measurements (cm)</label>
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                type="number"
+                name="chest"
+                value={formData.chest}
+                onChange={handleChange}
+                placeholder="Chest"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="waist"
+                value={formData.waist}
+                onChange={handleChange}
+                placeholder="Waist"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="hips"
+                value={formData.hips}
+                onChange={handleChange}
+                placeholder="Hips"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="biceps"
+                value={formData.biceps}
+                onChange={handleChange}
+                placeholder="Biceps"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="thighs"
+                value={formData.thighs}
+                onChange={handleChange}
+                placeholder="Thighs"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">Performance Metrics</label>
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                type="number"
+                name="maxBenchPress"
+                value={formData.maxBenchPress}
+                onChange={handleChange}
+                placeholder="Bench (kg)"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="maxSquat"
+                value={formData.maxSquat}
+                onChange={handleChange}
+                placeholder="Squat (kg)"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+              <input
+                type="number"
+                name="runTime"
+                value={formData.runTime}
+                onChange={handleChange}
+                placeholder="Run (min)"
+                className="bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">Notes</label>
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              rows="2"
+              className="w-full bg-[#12121e] border border-[#00ff00]/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300 resize-none"
+              placeholder="Any notes about this progress..."
+            />
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 bg-[#00ff00] text-[#02020a] py-3 rounded-xl font-semibold hover:shadow-[0_0_30px_rgba(0,255,0,0.3)] transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {submitting ? (
+                <>
+                  <Spinner size="sm" />
+                  {editingEntry ? 'Updating...' : 'Logging...'}
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5" />
+                  {editingEntry ? 'Update Progress' : 'Log Progress'}
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="px-6 bg-[#12121e] text-gray-400 py-3 rounded-xl font-semibold hover:text-white hover:bg-[#1a1a2e] transition-all duration-300"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
-
-
 
 export default Progress;

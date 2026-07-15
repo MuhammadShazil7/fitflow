@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Error loading user:', error);
       localStorage.removeItem('token');
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
-      return { success: false, error: error.response?.data?.message };
+      return { success: false };
     }
   };
 
@@ -58,8 +59,9 @@ export const AuthProvider = ({ children }) => {
       toast.success('Account created successfully! 🎉');
       return { success: true };
     } catch (error) {
+      console.error('Registration error:', error.response?.data);
       toast.error(error.response?.data?.message || 'Registration failed');
-      return { success: false, error: error.response?.data?.message };
+      return { success: false };
     }
   };
 
@@ -70,14 +72,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      isAuthenticated: !!user, 
-      login, 
-      register, 
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      isAuthenticated: !!user,
+      login,
+      register,
       logout,
-      loadUser 
+      loadUser,
     }}>
       {children}
     </AuthContext.Provider>

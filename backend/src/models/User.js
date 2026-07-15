@@ -33,6 +33,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: 'default-avatar.png',
     },
+
+    gameData: {
+          xp: { type: Number, default: 0 },
+          level: { type: Number, default: 1 },
+          streak: { type: Number, default: 0 },
+          lastWorkoutDate: { type: Date, default: null },
+          achievements: { type: [String], default: [] },
+          totalWorkouts: { type: Number, default: 0 },
+        },
+
     preferences: {
       units: {
         type: String,
