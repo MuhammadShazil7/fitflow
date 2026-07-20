@@ -10,7 +10,10 @@ import {
   Zap,
   Clock,
   Trash2,
-  CheckCircle
+  CheckCircle,
+  Apple,
+  TrendingUp,
+  Target
 } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 
@@ -30,6 +33,8 @@ const Notifications = () => {
       achievement: <Trophy className="w-5 h-5 text-yellow-500" />,
       streak: <Flame className="w-5 h-5 text-orange-500" />,
       goal: <Zap className="w-5 h-5 text-[#00ff00]" />,
+      nutrition: <Apple className="w-5 h-5 text-green-500" />,
+      progress: <TrendingUp className="w-5 h-5 text-blue-500" />,
       system: <Bell className="w-5 h-5 text-blue-500" />,
       reminder: <Clock className="w-5 h-5 text-purple-500" />,
     };
@@ -42,6 +47,8 @@ const Notifications = () => {
       achievement: '🏆 Achievement',
       streak: '🔥 Streak',
       goal: '🎯 Goal',
+      nutrition: '🍎 Nutrition',
+      progress: '📊 Progress',
       system: '⚡ System',
       reminder: '⏰ Reminder',
     };

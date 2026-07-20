@@ -43,7 +43,7 @@ export const NotificationProvider = ({ children }) => {
     };
   }, []);
 
-  // Wrapper functions
+  // ===== WRAPPER FUNCTIONS =====
   const addNotification = (type, title, message, link = null) => {
     return notificationService.add(type, title, message, link);
   };
@@ -64,9 +64,14 @@ export const NotificationProvider = ({ children }) => {
     notificationService.clearAll();
   };
 
+  // ===== NOTIFICATION TRIGGERS =====
   const notifyWorkout = (name) => {
     console.log('🔔 Context notifyWorkout called with:', name);
     return notificationService.notifyWorkout(name);
+  };
+
+  const notifyWorkoutComplete = (workoutName) => {
+    return notificationService.notifyWorkoutComplete(workoutName);
   };
 
   const notifyAchievement = (name) => {
@@ -79,14 +84,28 @@ export const NotificationProvider = ({ children }) => {
     return notificationService.notifyStreak(days);
   };
 
-  const notifyGoal = (name) => {
-    return notificationService.notifyGoal(name);
+  // ✅ FIX: Single notifyGoal function with optional status
+  const notifyGoal = (goalName, status = 'progress') => {
+    return notificationService.notifyGoal(goalName, status);
+  };
+
+  const notifyNutrition = (name) => {
+    return notificationService.notifyNutrition(name);
+  };
+
+  const notifyMealLogged = (foodName) => {
+    return notificationService.notifyMealLogged(foodName);
+  };
+
+  const notifyProgress = (metric, value) => {
+    return notificationService.notifyProgress(metric, value);
   };
 
   const notifyReminder = (message) => {
     return notificationService.notifyReminder(message);
   };
 
+  // ===== EXPOSE ALL =====
   const value = {
     notifications,
     unreadCount,
@@ -96,9 +115,13 @@ export const NotificationProvider = ({ children }) => {
     deleteNotification,
     clearAll,
     notifyWorkout,
+    notifyWorkoutComplete,
     notifyAchievement,
     notifyStreak,
     notifyGoal,
+    notifyNutrition,
+    notifyMealLogged,
+    notifyProgress,
     notifyReminder,
   };
 

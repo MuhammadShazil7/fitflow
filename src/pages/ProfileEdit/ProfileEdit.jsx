@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, X, User, Mail, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Spinner from '../../components/common/Spinner';
-import toast from 'react-hot-toast';
 
 const ProfileEdit = () => {
   const { user, updateUser } = useAuth();
@@ -32,7 +31,7 @@ const ProfileEdit = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button 
@@ -97,6 +96,22 @@ const ProfileEdit = () => {
               />
             </div>
           </div>
+
+          {/* Optional: Password field - only if you want to allow password change */}
+          {/* <div>
+            <label className="block text-sm font-semibold text-gray-300 mb-2">New Password</label>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
+              <input
+                type="password"
+                name="password"
+                value={formData.password || ''}
+                onChange={handleChange}
+                className="w-full bg-[#12121e] border border-[#00ff00]/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:border-[#00ff00] focus:ring-2 focus:ring-[#00ff00]/20 outline-none transition-all duration-300"
+                placeholder="Leave blank to keep current"
+              />
+            </div>
+          </div> */}
 
           <div className="flex gap-3 pt-4">
             <button

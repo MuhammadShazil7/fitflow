@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Video, 
@@ -9,8 +9,12 @@ import {
   Apple,
   BarChart3,
   Users,
-  Zap
+  Zap,
+  Target,
+  Home,
+  User
 } from 'lucide-react';
+
 
 const Videos = () => {
   const tutorials = [
@@ -44,11 +48,17 @@ const Videos = () => {
       icon: <Users className="w-6 h-6 text-[#00ff00]" />,
       description: 'Connect with others and stay motivated'
     },
+    {
+      title: 'Goal Setting & Achievements',
+      duration: '6:20',
+      icon: <Target className="w-6 h-6 text-[#00ff00]" />,
+      description: 'Learn how to set goals and unlock achievements'
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#02020a] pb-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Link 
@@ -58,7 +68,10 @@ const Videos = () => {
             <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Video Tutorials</h1>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Video className="w-6 h-6 text-[#00ff00]" />
+              Video Tutorials
+            </h1>
             <p className="text-gray-400 text-sm">Watch step-by-step guides</p>
           </div>
         </div>

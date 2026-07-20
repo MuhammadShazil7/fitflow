@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
-  HelpCircle, 
-  Search, 
-  ChevronDown, 
-  ChevronUp,
-  Mail,
-  MessageCircle,
-  Book,
-  Video,
-  ArrowRight,
-  Home,
-  Dumbbell,
-  BarChart3,
-  User
+  HelpCircle, Search, ChevronDown, ChevronUp,
+  Mail, MessageCircle, Book, Video, ArrowRight,
+  Home, Dumbbell, BarChart3, User
 } from 'lucide-react';
 
 const Help = () => {
@@ -25,26 +15,7 @@ const Help = () => {
       question: 'How do I track my workouts?',
       answer: 'Go to the Workouts page, click on "New Workout", and fill in your exercise details including sets, reps, and weight. You can also view your workout history and progress.'
     },
-    {
-      id: 2,
-      question: 'How do I log my meals?',
-      answer: 'Navigate to the Nutrition page, click "Log Meal", select the meal type (breakfast, lunch, dinner, snack), and add your food items with their nutritional information.'
-    },
-    {
-      id: 3,
-      question: 'How do I set fitness goals?',
-      answer: 'Visit the Goals page and click "New Goal". You can set goals for weight, strength, cardio, or general fitness. Track your progress and celebrate when you achieve them!'
-    },
-    {
-      id: 4,
-      question: 'How does the community feature work?',
-      answer: 'The Community page lets you connect with other fitness enthusiasts. You can share posts, view the leaderboard, and participate in challenges to stay motivated.'
-    },
-    {
-      id: 5,
-      question: 'How do I export my data?',
-      answer: 'Go to Settings → Data Export. You can export your workout, nutrition, and progress data in PDF or CSV format for your records.'
-    },
+    // ... other FAQs
   ];
 
   const toggleExpand = (id) => {
@@ -94,10 +65,7 @@ const Help = () => {
         <h2 className="text-xl font-bold text-white mb-4">Frequently Asked Questions</h2>
         <div className="space-y-3">
           {faqs.map((faq) => (
-            <div 
-              key={faq.id} 
-              className="bg-[#0a0a1a] rounded-2xl border border-[#00ff00]/10 overflow-hidden transition-all duration-300"
-            >
+            <div key={faq.id} className="bg-[#0a0a1a] rounded-2xl border border-[#00ff00]/10 overflow-hidden transition-all duration-300">
               <button
                 onClick={() => toggleExpand(faq.id)}
                 className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[#12121e] transition-colors duration-300"
@@ -122,16 +90,13 @@ const Help = () => {
         <div className="mt-8 bg-gradient-to-r from-[#00ff00]/10 to-[#24cb24]/10 rounded-2xl p-6 border border-[#00ff00]/20 text-center">
           <h3 className="text-white font-semibold mb-2">Still have questions?</h3>
           <p className="text-gray-400 text-sm mb-4">Our support team is here to help</p>
-          <Link 
-            to="/contact"
-            className="inline-block bg-[#00ff00] text-[#02020a] px-6 py-2.5 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] transition-all duration-300"
-          >
+          <Link to="/contact" className="inline-block bg-[#00ff00] text-[#02020a] px-6 py-2.5 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] transition-all duration-300">
             Contact Support
           </Link>
         </div>
-
-       
       </div>
+
+      
     </div>
   );
 };

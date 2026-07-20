@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { GameProvider } from './context/GameContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // ===== COMPONENTS =====
 import Navbar from './components/landing/Navbar/Navbar';
@@ -35,7 +36,8 @@ import Goals from './pages/Goals/Goals';
 import Achievements from './pages/Achievements/Achievements';
 import Reports from './pages/Reports/Reports';
 import Notifications from './pages/Notifications/Notifications';
-
+import Videos from './pages/Help/Videos'
+import Guide from './pages/Help/Guide';
 // ===== ROUTE GUARDS =====
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -67,6 +69,7 @@ const PublicRoute = ({ children }) => {
 
 function App() {
   return (
+      <ThemeProvider>
     <NotificationProvider>
     <Router>
       <AuthProvider>
@@ -80,6 +83,8 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/help" element={<Help />} />
+                <Route path="/help/guide" element={<Guide />} />
+                <Route path="/help/videos" element={<Videos />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/community" element={<Community />} />
                 
@@ -138,6 +143,7 @@ function App() {
       </AuthProvider>
     </Router>
     </NotificationProvider>
+    </ThemeProvider>
   );
 }
 

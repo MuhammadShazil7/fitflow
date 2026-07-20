@@ -26,7 +26,10 @@ const workoutRoutes = require('./routes/workoutRoutes');
 const nutritionRoutes = require('./routes/nutritionRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const goalRoutes = require('./routes/goalRoutes');
-const gameRoutes = require('./routes/gameRoutes')
+const gameRoutes = require('./routes/gameRoutes');
+const postRoutes = require('./routes/postRoutes');
+
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/workouts', workoutRoutes);
@@ -34,6 +37,7 @@ app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/game' , gameRoutes)
+app.use('/api/posts' , postRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

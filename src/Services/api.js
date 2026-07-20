@@ -69,11 +69,18 @@ export const getGoal = (id) => api.get(`/goals/${id}`);
 export const updateGoal = (id, data) => api.put(`/goals/${id}`, data);
 export const deleteGoal = (id) => api.delete(`/goals/${id}`);
 
-// ===== GAME =====
-export const getGameData = () => api.get('/game');
-export const updateGameData = (data) => api.put('/game', data);
-export const addXp = (amount) => api.post('/game/add-xp', { amount });
-export const trackWorkout = () => api.post('/game/track-workout');
+// ===== POSTS (Community) =====
+export const createPost = (data) => api.post('/posts', data);
+export const getPosts = () => api.get('/posts');
+export const getPost = (id) => api.get(`/posts/${id}`);
+export const updatePost = (id, data) => api.put(`/posts/${id}`, data);
+export const deletePost = (id) => api.delete(`/posts/${id}`);
+export const likePost = (id) => api.post(`/posts/${id}/like`);
+export const addComment = (id, text) => api.post(`/posts/${id}/comments`, { text });
+export const deleteComment = (postId, commentId) => api.delete(`/posts/${postId}/comments/${commentId}`);
 
+// ===== LEADERBOARD =====
+export const getLeaderboard = () => api.get('/posts/leaderboard');
+export const getUserRank = () => api.get('/posts/leaderboard/rank');
 
 export default api;

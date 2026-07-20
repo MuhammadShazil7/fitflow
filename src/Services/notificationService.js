@@ -18,7 +18,6 @@ class NotificationService {
         this.unreadCount = data.unreadCount || 0;
         console.log('🔔 Loaded notifications from storage:', this.notifications.length);
       } else {
-        // Initialize with empty array if nothing in localStorage
         this.notifications = [];
         this.unreadCount = 0;
         this.saveToStorage();
@@ -56,7 +55,6 @@ class NotificationService {
       createdAt: new Date().toISOString(),
     };
 
-    // Add to beginning of array
     this.notifications = [notification, ...this.notifications];
     this.unreadCount += 1;
     this.saveToStorage();
@@ -64,7 +62,6 @@ class NotificationService {
     this.showToast(notification);
     
     console.log('🔔 Notification added! Total now:', this.notifications.length);
-    console.log('🔔 Current notifications:', this.notifications);
     return notification;
   }
 
@@ -76,6 +73,8 @@ class NotificationService {
       achievement: '🏆',
       streak: '🔥',
       goal: '🎯',
+      nutrition: '🍎',
+      progress: '📊',
       system: '⚡',
       reminder: '⏰',
     };
@@ -144,7 +143,6 @@ class NotificationService {
   subscribe(callback) {
     console.log('🔔 New listener subscribed');
     this.listeners.push(callback);
-    // Immediately call with current data
     callback(this.notifications, this.unreadCount);
     return () => {
       this.listeners = this.listeners.filter(cb => cb !== callback);
@@ -162,13 +160,23 @@ class NotificationService {
     });
   }
 
-  // Pre-defined notification methods
+  // ===== NOTIFICATION TRIGGERS =====
+
   notifyWorkout(workoutName) {
     console.log('🔔 NOTIFY WORKOUT CALLED:', workoutName);
     return this.add(
       'workout',
       '💪 Workout Logged',
       `You logged "${workoutName || 'Workout'}"! Keep pushing! 💪`,
+      '/workouts'
+    );
+  }
+
+  notifyWorkoutComplete(workoutName) {
+    return this.add(
+      'workout',
+      '🏆 Workout Complete!',
+      `You completed "${workoutName}"! Great job! 💪`,
       '/workouts'
     );
   }
@@ -193,12 +201,38 @@ class NotificationService {
     );
   }
 
-  notifyGoal(goalName) {
+  notifyGoal(goalName, status = 'progress') {
+    const title = status === 'completed' ? '🎯 Goal Achieved!' : '🎯 Goal Updated';
+    const message = status === 'completed'
+      ? `You completed "${goalName}"! Amazing! 🎉`
+      : `You made progress on "${goalName}"! Keep it up!`;
+    return this.add('goal', title, message, '/goals');
+  }
+
+  notifyNutrition(mealName) {
     return this.add(
-      'goal',
-      '🎯 Goal Progress',
-      `You're making progress on "${goalName}"! Keep it up! 🎯`,
-      '/goals'
+      'nutrition',
+      '🍎 Meal Logged',
+      `You logged "${mealName || 'a meal'}"! Keep eating healthy! 🥗`,
+      '/nutrition'
+    );
+  }
+
+  notifyMealLogged(foodName) {
+    return this.add(
+      'nutrition',
+      '🍽️ Food Logged',
+      `You logged "${foodName || 'a food item'}"! 🥗`,
+      '/nutrition'
+    );
+  }
+
+  notifyProgress(metric, value) {
+    return this.add(
+      'progress',
+      '📊 Progress Updated',
+      `You updated ${metric} to ${value}! Keep going! 💪`,
+      '/progress'
     );
   }
 

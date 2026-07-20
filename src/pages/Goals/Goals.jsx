@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Target, 
   Plus, 
@@ -12,17 +12,19 @@ import {
   Trash2,
   Zap,
   Calendar,
-  ArrowLeft
+  Home,
+  BarChart3,
+  User
 } from 'lucide-react';
 import { useGoals } from '../../hooks/useGoals';
-import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 import Modal from '../../components/common/Modal';
 import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';
 
 const Goals = () => {
   const { goals, loading, addGoal, editGoal, removeGoal } = useGoals();
-  const { user } = useAuth();
+  const { notifyGoal } = useNotifications();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [formData, setFormData] = useState({
@@ -94,10 +96,14 @@ const Goals = () => {
       result = await addGoal(goalData);
     }
 
-    setSubmitting(false);
     if (result.success) {
+      // ✅ Send notification
+      const status = formData.progress >= 100 ? 'completed' : 'progress';
+      notifyGoal(formData.title, status);
       handleCloseModal();
     }
+    
+    setSubmitting(false);
   };
 
   const handleDelete = async (id) => {
@@ -111,8 +117,13 @@ const Goals = () => {
     if (newProgress !== null) {
       const progress = parseInt(newProgress);
       if (!isNaN(progress) && progress >= 0 && progress <= 100) {
-        await editGoal(goal._id, { ...goal, progress });
-        toast.success('Progress updated! 🎯');
+        const updatedGoal = { ...goal, progress };
+        const result = await editGoal(goal._id, updatedGoal);
+        if (result.success) {
+          // ✅ Send notification on progress update
+          notifyGoal(goal.title, progress >= 100 ? 'completed' : 'progress');
+          toast.success('Progress updated! 🎯');
+        }
       } else {
         toast.error('Please enter a number between 0 and 100');
       }
@@ -150,7 +161,7 @@ const Goals = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
@@ -365,7 +376,44 @@ const Goals = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
+  );
+};
+
+// Bottom Navigation Component
+const BottomNav = () => {
+  const location = useLocation();
+  const navItems = [
+    { icon: <Home className="w-6 h-6" />, label: 'Home', path: '/dashboard' },
+    { icon: <Dumbbell className="w-6 h-6" />, label: 'Workouts', path: '/workouts' },
+    { icon: <BarChart3 className="w-6 h-6" />, label: 'Progress', path: '/progress' },
+    { icon: <User className="w-6 h-6" />, label: 'Profile', path: '/profile' },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0a1a] border-t border-[#00ff00]/10 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-around py-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl transition-all duration-300 ${
+                location.pathname === item.path 
+                  ? 'text-[#00ff00]' 
+                  : 'text-gray-500 hover:text-gray-300'
+              }`}
+            >
+              {item.icon}
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </nav>
   );
 };
 

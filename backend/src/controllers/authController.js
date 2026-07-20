@@ -137,29 +137,27 @@ const getMe = async (req, res) => {
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
-    const { name, username, profilePicture, preferences } = req.body;
-
+    const { name, username, email } = req.body;
     const user = await User.findById(req.user._id);
-
+    
     if (name) user.name = name;
     if (username) user.username = username;
-    if (profilePicture) user.profilePicture = profilePicture;
-    if (preferences) {
-      user.preferences = { ...user.preferences, ...preferences };
-    }
-
+    if (email) user.email = email;
+    
     await user.save();
-
+    
     res.json({
       success: true,
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+      },
     });
   } catch (error) {
-    console.error('❌ Update Profile Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-    });
+    console.error('Update profile error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

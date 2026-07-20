@@ -23,11 +23,27 @@ const NotificationBell = () => {
       workout: <Dumbbell className="w-4 h-4 text-[#00ff00]" />,
       achievement: <Trophy className="w-4 h-4 text-yellow-500" />,
       streak: <Flame className="w-4 h-4 text-orange-500" />,
+      nutrition: <Apple className="w-5 h-5 text-green-500" />,    //
+      progress: <TrendingUp className="w-5 h-5 text-blue-500" />, 
       goal: <Zap className="w-4 h-4 text-[#00ff00]" />,
       reminder: <Clock className="w-4 h-4 text-purple-500" />,
     };
     return icons[type] || <Bell className="w-4 h-4 text-gray-500" />;
   };
+
+  const getTypeLabel = (type) => {
+  const labels = {
+    workout: '💪 Workout',
+    achievement: '🏆 Achievement',
+    streak: '🔥 Streak',
+    goal: '🎯 Goal',
+    nutrition: '🍎 Nutrition',   
+    progress: '📊 Progress',     
+    system: '⚡ System',
+    reminder: '⏰ Reminder',
+  };
+  return labels[type] || type;
+};
 
   const getTimeAgo = (date) => {
     const diff = Date.now() - new Date(date).getTime();

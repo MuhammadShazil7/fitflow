@@ -1,114 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   Settings as SettingsIcon,
   Bell,
   Moon,
   Sun,
-  Globe,
-  Lock,
   User,
-  ChevronRight,
-  Volume2,
-  Shield,
-  Database,
-  HelpCircle,
   LogOut,
-  Dumbbell,
-  BarChart3,
-  Home,
   User as UserIcon,
-  Check,
-  X,
   Edit2,
   Save,
-  RotateCcw,
   Download,
-  Upload,
   Trash2,
   AlertTriangle,
-  Smartphone,
-  Monitor,
-  Eye,
-  EyeOff,
   Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Clock,
-  Zap,
-  Award,
-  TrendingUp,
-  Target
+  Ruler,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-//import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useGame } from '../../context/GameContext';
+import { useNotifications } from '../../context/NotificationContext';
 import toast from 'react-hot-toast';
 
 const Settings = () => {
   const { user, logout, updateUser } = useAuth();
-  //const { darkMode, toggleTheme } = useTheme();
+  const { darkMode, toggleTheme } = useTheme();
   const { xp, level, streak, achievements } = useGame();
+  const { clearAll } = useNotifications();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  
+  // Profile form
   const [formData, setFormData] = useState({
     name: user?.name || '',
     username: user?.username || '',
     email: user?.email || '',
   });
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    workoutReminders: true,
-    achievements: true,
-    community: false,
-  });
-  const [privacy, setPrivacy] = useState({
-    profileVisibility: 'public',
-    showProgress: true,
-    showAchievements: true,
-  });
-  const [preferences, setPreferences] = useState({
-    language: 'English',
-    timezone: 'UTC-5',
-    dateFormat: 'MM/DD/YYYY',
+
+  // Simple settings
+  const [settings, setSettings] = useState({
     units: 'metric',
+    notifications: true,
   });
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedSettings = localStorage.getItem(`settings_${user?._id}`);
-    if (savedSettings) {
-      const data = JSON.parse(savedSettings);
-      setNotifications(data.notifications || notifications);
-      setPrivacy(data.privacy || privacy);
-      setPreferences(data.preferences || preferences);
+    if (user) {
+      const saved = localStorage.getItem(`settings_${user._id}`);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          setSettings(prev => ({
+            units: data.units || 'metric',
+            notifications: data.notifications !== undefined ? data.notifications : true,
+          }));
+        } catch (e) {
+          console.error('Failed to load settings');
+        }
+      }
     }
   }, [user]);
 
   // Save settings to localStorage
   const saveSettings = () => {
-    const data = {
-      notifications,
-      privacy,
-      preferences,
-    };
-    localStorage.setItem(`settings_${user?._id}`, JSON.stringify(data));
-    toast.success('Settings saved successfully!');
+    if (!user) return;
+    localStorage.setItem(`settings_${user._id}`, JSON.stringify(settings));
+    toast.success('Settings saved! ✅');
   };
 
+  // Handle profile update
   const handleProfileUpdate = async () => {
     setLoading(true);
     const result = await updateUser(formData);
     setLoading(false);
     if (result.success) {
       setEditMode(false);
-      toast.success('Profile updated successfully!');
     }
   };
 
+  // Handle logout
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       logout();
@@ -116,31 +88,7 @@ const Settings = () => {
     }
   };
 
-  const handleResetAll = () => {
-    if (window.confirm('Are you sure you want to reset all settings to default?')) {
-      setNotifications({
-        email: true,
-        push: true,
-        workoutReminders: true,
-        achievements: true,
-        community: false,
-      });
-      setPrivacy({
-        profileVisibility: 'public',
-        showProgress: true,
-        showAchievements: true,
-      });
-      setPreferences({
-        language: 'English',
-        timezone: 'UTC-5',
-        dateFormat: 'MM/DD/YYYY',
-        units: 'metric',
-      });
-      toast.success('Settings reset to default!');
-      saveSettings();
-    }
-  };
-
+  // Export data
   const handleExportData = () => {
     const data = {
       user: {
@@ -154,32 +102,32 @@ const Settings = () => {
         streak,
         achievements,
       },
-      settings: {
-        notifications,
-        privacy,
-        preferences,
-      },
+      settings,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `fitflow_settings_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `fitflow_data_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Data exported successfully!');
+    toast.success('Data exported! 📥');
   };
 
+  // Delete account
   const handleDeleteAccount = () => {
-    if (window.confirm('⚠️ Are you sure you want to delete your account? This action cannot be undone!')) {
-      if (window.confirm('Really? All your data will be permanently lost!')) {
-        toast.error('Account deletion request submitted.');
-        // In production, this would call an API
-      }
+    if (window.confirm('⚠️ Delete your account? This cannot be undone!')) {
+      localStorage.removeItem(`settings_${user._id}`);
+      localStorage.removeItem(`game_${user._id}`);
+      clearAll();
+      logout();
+      toast.success('Account deleted');
+      navigate('/');
     }
   };
 
-  const ToggleSwitch = ({ enabled, onChange, label }) => (
+  // Toggle Switch
+  const ToggleSwitch = ({ enabled, onChange }) => (
     <button
       onClick={onChange}
       className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
@@ -194,61 +142,12 @@ const Settings = () => {
     </button>
   );
 
-  const settingsSections = [
-    {
-      title: 'Profile',
-      icon: <User className="w-5 h-5 text-[#00ff00]" />,
-      description: 'Manage your personal information',
-    },
-    {
-      title: 'Preferences',
-      icon: <SettingsIcon className="w-5 h-5 text-[#00ff00]" />,
-      description: 'Customize your app experience',
-    },
-    {
-      title: 'Notifications',
-      icon: <Bell className="w-5 h-5 text-[#00ff00]" />,
-      description: 'Control your notification preferences',
-    },
-    {
-      title: 'Privacy',
-      icon: <Shield className="w-5 h-5 text-[#00ff00]" />,
-      description: 'Manage your privacy settings',
-    },
-    {
-      title: 'Data & Storage',
-      icon: <Database className="w-5 h-5 text-[#00ff00]" />,
-      description: 'Export, import, or delete your data',
-    },
-  ];
-
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <SettingsIcon className="w-6 h-6 text-[#00ff00]" />
-            Settings
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your account and preferences</p>
-        </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={saveSettings}
-            className="bg-[#00ff00] text-[#02020a] px-4 py-2 rounded-xl font-semibold text-sm hover:shadow-[0_0_30px_rgba(0,255,0,0.3)] transition-all duration-300 flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            Save All
-          </button>
-          <button 
-            onClick={handleResetAll}
-            className="border border-[#00ff00]/20 text-gray-400 px-4 py-2 rounded-xl font-semibold text-sm hover:bg-[#00ff00]/10 hover:text-white transition-all duration-300 flex items-center gap-2"
-          >
-            <RotateCcw className="w-4 h-4" />
-            Reset
-          </button>
-        </div>
+      <div className="flex items-center gap-3 mb-8">
+        <SettingsIcon className="w-6 h-6 text-[#00ff00]" />
+        <h1 className="text-2xl font-bold text-white">Settings</h1>
       </div>
 
       {/* Profile Section */}
@@ -260,7 +159,7 @@ const Settings = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold">Profile</h3>
-              <p className="text-gray-400 text-sm">Manage your personal information</p>
+              <p className="text-gray-400 text-sm">Update your personal info</p>
             </div>
           </div>
           <button 
@@ -324,7 +223,7 @@ const Settings = () => {
               disabled={loading}
               className="w-full bg-[#00ff00] text-[#02020a] py-2.5 rounded-xl font-semibold hover:shadow-[0_0_30px_rgba(0,255,0,0.3)] transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Saving...' : <><Save className="w-4 h-4" /> Update Profile</>}
+              {loading ? 'Saving...' : <><Save className="w-4 h-4" /> Update</>}
             </button>
           )}
         </div>
@@ -332,199 +231,97 @@ const Settings = () => {
 
       {/* Preferences Section */}
       <div className="bg-[#0a0a1a] rounded-2xl p-6 border border-[#00ff00]/10 mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[#00ff00]/10 flex items-center justify-center">
-            <SettingsIcon className="w-5 h-5 text-[#00ff00]" />
+        <h3 className="text-white font-semibold mb-4">Preferences</h3>
+
+        {/* Theme */}
+        <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl mb-3">
+          <div className="flex items-center gap-3">
+            {darkMode ? <Moon className="w-5 h-5 text-[#00ff00]" /> : <Sun className="w-5 h-5 text-yellow-500" />}
+            <div>
+              <p className="text-white text-sm font-medium">Dark Mode</p>
+              <p className="text-gray-400 text-xs">{darkMode ? 'On' : 'Off'}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-white font-semibold">Preferences</h3>
-            <p className="text-gray-400 text-sm">Customize your app experience</p>
-          </div>
+          <ToggleSwitch enabled={darkMode} onChange={toggleTheme} />
         </div>
 
-        <div className="space-y-4">
-          {/* Theme */}
-          {/* <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
-            <div className="flex items-center gap-3">
-              {darkMode ? <Moon className="w-5 h-5 text-[#00ff00]" /> : <Sun className="w-5 h-5 text-yellow-500" />}
-              <div>
-                <p className="text-white text-sm font-medium">Theme</p>
-                <p className="text-gray-400 text-xs">{darkMode ? 'Dark Mode' : 'Light Mode'}</p>
-              </div>
+        {/* Units */}
+        <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
+          <div className="flex items-center gap-3">
+            <Ruler className="w-5 h-5 text-[#00ff00]" />
+            <div>
+              <p className="text-white text-sm font-medium">Units</p>
+              <p className="text-gray-400 text-xs">{settings.units === 'metric' ? 'Metric (kg, cm)' : 'Imperial (lb, ft)'}</p>
             </div>
-            <ToggleSwitch enabled={darkMode} onChange={toggleTheme} />
-          </div> */}
-
-          {/* Language */}
-          <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
-            <div className="flex items-center gap-3">
-              <Globe className="w-5 h-5 text-[#00ff00]" />
-              <div>
-                <p className="text-white text-sm font-medium">Language</p>
-                <p className="text-gray-400 text-xs">{preferences.language}</p>
-              </div>
-            </div>
-            <select
-              value={preferences.language}
-              onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-              className="bg-[#0a0a1a] border border-[#00ff00]/10 rounded-lg px-3 py-1.5 text-white text-sm focus:border-[#00ff00] outline-none"
-            >
-              <option value="English">English</option>
-              <option value="Spanish">Spanish</option>
-              <option value="French">French</option>
-              <option value="German">German</option>
-              <option value="Chinese">Chinese</option>
-            </select>
           </div>
-
-          {/* Units */}
-          <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
-            <div className="flex items-center gap-3">
-              <Ruler className="w-5 h-5 text-[#00ff00]" />
-              <div>
-                <p className="text-white text-sm font-medium">Units</p>
-                <p className="text-gray-400 text-xs">{preferences.units === 'metric' ? 'Metric (kg, cm)' : 'Imperial (lb, ft)'}</p>
-              </div>
-            </div>
-            <select
-              value={preferences.units}
-              onChange={(e) => setPreferences({ ...preferences, units: e.target.value })}
-              className="bg-[#0a0a1a] border border-[#00ff00]/10 rounded-lg px-3 py-1.5 text-white text-sm focus:border-[#00ff00] outline-none"
-            >
-              <option value="metric">Metric</option>
-              <option value="imperial">Imperial</option>
-            </select>
-          </div>
+          <select
+            value={settings.units}
+            onChange={(e) => {
+              setSettings({ ...settings, units: e.target.value });
+              saveSettings();
+            }}
+            className="bg-[#0a0a1a] border border-[#00ff00]/10 rounded-lg px-3 py-1.5 text-white text-sm focus:border-[#00ff00] outline-none"
+          >
+            <option value="metric">Metric</option>
+            <option value="imperial">Imperial</option>
+          </select>
         </div>
       </div>
 
-      {/* Notifications Section */}
+      {/* Notifications */}
       <div className="bg-[#0a0a1a] rounded-2xl p-6 border border-[#00ff00]/10 mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[#00ff00]/10 flex items-center justify-center">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <Bell className="w-5 h-5 text-[#00ff00]" />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold">Notifications</h3>
-            <p className="text-gray-400 text-sm">Control your notification preferences</p>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {Object.entries(notifications).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
-              <div>
-                <p className="text-white text-sm font-medium capitalize">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                </p>
-                <p className="text-gray-400 text-xs">
-                  {value ? 'Enabled' : 'Disabled'}
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={value}
-                onChange={() => setNotifications({ ...notifications, [key]: !value })}
-              />
+            <div>
+              <p className="text-white text-sm font-medium">Notifications</p>
+              <p className="text-gray-400 text-xs">{settings.notifications ? 'Enabled' : 'Disabled'}</p>
             </div>
-          ))}
+          </div>
+          <ToggleSwitch
+            enabled={settings.notifications}
+            onChange={() => {
+              setSettings({ ...settings, notifications: !settings.notifications });
+              saveSettings();
+            }}
+          />
         </div>
       </div>
 
-      {/* Privacy Section */}
+      {/* Data */}
       <div className="bg-[#0a0a1a] rounded-2xl p-6 border border-[#00ff00]/10 mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[#00ff00]/10 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-[#00ff00]" />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold">Privacy</h3>
-            <p className="text-gray-400 text-sm">Manage your privacy settings</p>
-          </div>
-        </div>
+        <h3 className="text-white font-semibold mb-4">Data</h3>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
+        <button
+          onClick={handleExportData}
+          className="w-full flex items-center justify-between p-3 bg-[#12121e] rounded-xl hover:bg-[#1a1a2e] transition-all duration-300 group mb-3"
+        >
+          <div className="flex items-center gap-3">
+            <Download className="w-5 h-5 text-[#00ff00]" />
             <div>
-              <p className="text-white text-sm font-medium">Profile Visibility</p>
-              <p className="text-gray-400 text-xs capitalize">{privacy.profileVisibility}</p>
+              <p className="text-white text-sm font-medium">Export Data</p>
+              <p className="text-gray-400 text-xs">Download all your data</p>
             </div>
-            <select
-              value={privacy.profileVisibility}
-              onChange={(e) => setPrivacy({ ...privacy, profileVisibility: e.target.value })}
-              className="bg-[#0a0a1a] border border-[#00ff00]/10 rounded-lg px-3 py-1.5 text-white text-sm focus:border-[#00ff00] outline-none"
-            >
-              <option value="public">Public</option>
-              <option value="friends">Friends Only</option>
-              <option value="private">Private</option>
-            </select>
           </div>
-          <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
+          <span className="text-gray-500 group-hover:text-[#00ff00] transition-colors">→</span>
+        </button>
+
+        <button
+          onClick={handleDeleteAccount}
+          className="w-full flex items-center justify-between p-3 bg-red-500/5 rounded-xl hover:bg-red-500/10 transition-all duration-300 group border border-red-500/10"
+        >
+          <div className="flex items-center gap-3">
+            <Trash2 className="w-5 h-5 text-red-500" />
             <div>
-              <p className="text-white text-sm font-medium">Show Progress</p>
-              <p className="text-gray-400 text-xs">{privacy.showProgress ? 'Visible' : 'Hidden'}</p>
+              <p className="text-white text-sm font-medium">Delete Account</p>
+              <p className="text-red-400/70 text-xs">Permanently delete all data</p>
             </div>
-            <ToggleSwitch
-              enabled={privacy.showProgress}
-              onChange={() => setPrivacy({ ...privacy, showProgress: !privacy.showProgress })}
-            />
           </div>
-          <div className="flex items-center justify-between p-3 bg-[#12121e] rounded-xl">
-            <div>
-              <p className="text-white text-sm font-medium">Show Achievements</p>
-              <p className="text-gray-400 text-xs">{privacy.showAchievements ? 'Visible' : 'Hidden'}</p>
-            </div>
-            <ToggleSwitch
-              enabled={privacy.showAchievements}
-              onChange={() => setPrivacy({ ...privacy, showAchievements: !privacy.showAchievements })}
-            />
-          </div>
-        </div>
+          <AlertTriangle className="w-5 h-5 text-red-500" />
+        </button>
       </div>
 
-      {/* Data & Storage Section */}
-      <div className="bg-[#0a0a1a] rounded-2xl p-6 border border-[#00ff00]/10 mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[#00ff00]/10 flex items-center justify-center">
-            <Database className="w-5 h-5 text-[#00ff00]" />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold">Data & Storage</h3>
-            <p className="text-gray-400 text-sm">Export, import, or delete your data</p>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={handleExportData}
-            className="w-full flex items-center justify-between p-3 bg-[#12121e] rounded-xl hover:bg-[#1a1a2e] transition-all duration-300 group"
-          >
-            <div className="flex items-center gap-3">
-              <Download className="w-5 h-5 text-[#00ff00]" />
-              <div>
-                <p className="text-white text-sm font-medium">Export Data</p>
-                <p className="text-gray-400 text-xs">Download all your data as JSON</p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-[#00ff00] transition-colors" />
-          </button>
-
-          <button
-            onClick={handleDeleteAccount}
-            className="w-full flex items-center justify-between p-3 bg-red-500/5 rounded-xl hover:bg-red-500/10 transition-all duration-300 group border border-red-500/10"
-          >
-            <div className="flex items-center gap-3">
-              <Trash2 className="w-5 h-5 text-red-500" />
-              <div>
-                <p className="text-white text-sm font-medium">Delete Account</p>
-                <p className="text-red-400/70 text-xs">Permanently delete all your data</p>
-              </div>
-            </div>
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-          </button>
-        </div>
-      </div>
-
-      {/* Logout Section */}
+      {/* Logout */}
       <button
         onClick={handleLogout}
         className="w-full bg-[#0a0a1a] rounded-2xl p-4 border border-[#00ff00]/10 hover:border-red-500/30 hover:bg-red-500/5 transition-all duration-300 flex items-center justify-center gap-2 text-red-500 font-semibold"
@@ -535,12 +332,5 @@ const Settings = () => {
     </div>
   );
 };
-
-// Ruler icon (add if missing)
-const Ruler = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 3m0 0l3-3m-3 3V3m0 12l3 3m0 0l3-3m-3 3v6m6-18l3 3m0 0l3-3m-3 3V3m0 12l3 3m0 0l3-3m-3 3v6" />
-  </svg>
-);
 
 export default Settings;
