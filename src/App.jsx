@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { NotificationProvider } from './context/NotificationContext';
-import { GameProvider } from './context/GameContext';
-import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './Context/authContext';
+import { NotificationProvider } from './Context/NotificationContext';
+import { GameProvider } from './Context/GameContext';
+import { ThemeProvider } from './Context/ThemeContext';
 
 // ===== COMPONENTS =====
 import Navbar from './components/landing/Navbar/Navbar';
