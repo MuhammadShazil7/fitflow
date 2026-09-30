@@ -39,8 +39,8 @@ const Contact = () => {
 
   const contactInfo = [
     { icon: <Mail className="w-5 h-5 text-[#00ff00]" />, label: 'Email', value: 'support@fitflow.com' },
-    { icon: <Phone className="w-5 h-5 text-[#00ff00]" />, label: 'Phone', value: '+1 (555) 123-4567' },
-    { icon: <MapPin className="w-5 h-5 text-[#00ff00]" />, label: 'Address', value: '123 Fitness St, NY 10001' },
+    { icon: <Phone className="w-5 h-5 text-[#00ff00]" />, label: 'Phone', value: '+92 313 1267143' },
+    { icon: <MapPin className="w-5 h-5 text-[#00ff00]" />, label: 'Address', value: '123 Fitness St, Karachi' },
     { icon: <Clock className="w-5 h-5 text-[#00ff00]" />, label: 'Hours', value: 'Mon-Fri 9AM - 6PM EST' },
   ];
 
