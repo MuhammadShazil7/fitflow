@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Zap, Dumbbell } from 'lucide-react';
 import { useWorkouts } from '../../hooks/useWorkouts';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 import toast from 'react-hot-toast';
 
 const QuickLog = () => {

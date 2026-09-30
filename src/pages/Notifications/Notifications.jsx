@@ -15,7 +15,7 @@ import {
   TrendingUp,
   Target
 } from 'lucide-react';
-import { useNotifications } from '../../context/NotificationContext';
+import { useNotifications } from '../../Context/NotificationContext';
 
 const Notifications = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll } = useNotifications();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, ThumbsUp, User, Clock } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 
 const SocialFeed = () => {
   const { user } = useAuth();

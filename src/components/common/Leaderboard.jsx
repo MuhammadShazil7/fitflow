@@ -9,9 +9,9 @@ import {
   Star,
   TrendingUp
 } from 'lucide-react';
-import { getLeaderboard, getUserRank } from '../../services/api';
+import { getLeaderboard, getUserRank } from '../../Services/api';
 import Spinner from './Spinner';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 
 const Leaderboard = () => {
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWorkouts, createWorkout, updateWorkout, deleteWorkout } from '../services/api';
+import { getWorkouts, createWorkout, updateWorkout, deleteWorkout } from '../Services/api';
 import toast from 'react-hot-toast';
 
 export const useWorkouts = () => {

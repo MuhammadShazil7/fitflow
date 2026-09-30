@@ -19,7 +19,7 @@ import {
   Check,
   Clock
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 import { usePosts } from '../../hooks/usePosts';
 import Leaderboard from '../../components/common/Leaderboard';
 import Spinner from '../../components/common/Spinner';

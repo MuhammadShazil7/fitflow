@@ -16,7 +16,7 @@ import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { useWorkouts } from '../../hooks/useWorkouts';
 import { useNutrition } from '../../hooks/useNutrition';
 import { useProgress } from '../../hooks/useProgress';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 import { 
   TrendingUp, 
   Calendar, 

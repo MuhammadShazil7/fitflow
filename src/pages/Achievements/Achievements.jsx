@@ -17,7 +17,7 @@ import {
   BarChart3,
   User
 } from 'lucide-react';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 
 const Achievements = () => {
   const { achievements, level, streak, totalWorkouts } = useGame();

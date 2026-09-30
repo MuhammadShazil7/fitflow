@@ -10,7 +10,7 @@ import {
   UserPlus,
   Zap
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 import toast from 'react-hot-toast';
 
 const Register = () => {

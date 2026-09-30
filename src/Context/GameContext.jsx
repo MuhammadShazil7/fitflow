@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from './authContext';
 import { useNotifications } from './NotificationContext';
 import toast from 'react-hot-toast';
 

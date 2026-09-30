@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Dumbbell, Apple, BarChart3, User } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 
 const MobileBottomNav = () => {
   const location = useLocation();

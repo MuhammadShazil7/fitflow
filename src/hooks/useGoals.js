@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getGoals, createGoal, updateGoal, deleteGoal } from '../services/api';
+import { getGoals, createGoal, updateGoal, deleteGoal } from '../Services/api';
 import toast from 'react-hot-toast';
 
 export const useGoals = () => {

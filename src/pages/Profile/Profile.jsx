@@ -21,10 +21,10 @@ import {
   Target,
   Clock
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 import { useWorkouts } from '../../hooks/useWorkouts';
 import { useNutrition } from '../../hooks/useNutrition';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 
 const Profile = () => {
   const { user, logout } = useAuth();

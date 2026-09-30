@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProgress, createProgress, updateProgress, deleteProgress, getProgressAnalytics } from '../services/api';
+import { getProgress, createProgress, updateProgress, deleteProgress, getProgressAnalytics } from '../Services/api';
 import toast from 'react-hot-toast';
 
 export const useProgress = () => {

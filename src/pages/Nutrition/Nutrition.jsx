@@ -6,7 +6,7 @@ import {
   Home, Dumbbell, BarChart3, User
 } from 'lucide-react';
 import { useNutrition } from '../../hooks/useNutrition';
-import { useNotifications } from '../../context/NotificationContext';
+import { useNotifications } from '../../Context/NotificationContext';
 import Modal from '../../components/common/Modal';
 import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';

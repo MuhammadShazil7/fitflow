@@ -6,7 +6,7 @@ import {
   Home, BarChart3, User
 } from 'lucide-react';
 import { useWorkouts } from '../../hooks/useWorkouts';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 import Modal from '../../components/common/Modal';
 import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';

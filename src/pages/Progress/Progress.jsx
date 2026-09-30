@@ -6,7 +6,7 @@ import {
   Check, Home, User
 } from 'lucide-react';
 import { useProgress } from '../../hooks/useProgress';
-import { useNotifications } from '../../context/NotificationContext';
+import { useNotifications } from '../../Context/NotificationContext';
 import Modal from '../../components/common/Modal';
 import Spinner from '../../components/common/Spinner';
 

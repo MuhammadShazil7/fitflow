@@ -7,7 +7,7 @@ import {
   likePost, 
   addComment, 
   deleteComment 
-} from '../services/api'; // ✅ Now these exports exist
+} from '../Services/api'; // ✅ Now these exports exist
 import toast from 'react-hot-toast';
 
 export const usePosts = () => {

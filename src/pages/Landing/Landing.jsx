@@ -25,8 +25,8 @@ import {
   Share2,
 } from 'lucide-react';
 import { FiInstagram, FiGithub, FiTwitter } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';
-import { useGame } from '../../context/GameContext';
+import { useAuth } from '../../Context/authContext';
+import { useGame } from '../../Context/GameContext';
 import { useWorkouts } from '../../hooks/useWorkouts';
 
 const Landing = () => {

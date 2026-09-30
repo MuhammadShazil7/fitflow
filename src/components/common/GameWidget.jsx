@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trophy, Zap, Award, Flame } from 'lucide-react';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 
 const GameWidget = () => {
   const { xp, level, streak, achievements, getXpForLevel } = useGame();

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getCurrentUser, loginUser, registerUser } from '../services/api';
-import api from '../services/api'; // ✅ Use the configured api instance
+import { getCurrentUser, loginUser, registerUser } from '../Services/api';
+import api from '../Services/api'; // ✅ Use the configured api instance
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();

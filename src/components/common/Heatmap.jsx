@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getWorkouts } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { getWorkouts } from '../../Services/api';
+import { useAuth } from '../../Context/authContext';
 
 const Heatmap = () => {
   const { user } = useAuth();

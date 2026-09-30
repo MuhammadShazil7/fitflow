@@ -15,9 +15,9 @@ import {
   Trash2,
   Calendar
 } from 'lucide-react';
-import { getWorkout, deleteWorkout, updateWorkout } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import { useGame } from '../../context/GameContext';
+import { getWorkout, deleteWorkout, updateWorkout } from '../../Services/api';
+import { useAuth } from '../../Context/authContext';
+import { useGame } from '../../Context/GameContext';
 import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';
 

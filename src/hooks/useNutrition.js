@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getNutrition, createNutrition, updateNutrition, deleteNutrition, getDailyNutrition } from '../services/api';
+import { getNutrition, createNutrition, updateNutrition, deleteNutrition, getDailyNutrition } from '../Services/api';
 import toast from 'react-hot-toast';
 
 export const useNutrition = () => {

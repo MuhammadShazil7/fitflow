@@ -17,10 +17,10 @@ import {
   Ruler,
   X
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import { useGame } from '../../context/GameContext';
-import { useNotifications } from '../../context/NotificationContext';
+import { useAuth } from '../../Context/authContext';
+import { useTheme } from '../../Context/ThemeContext';
+import { useGame } from '../../Context/GameContext';
+import { useNotifications } from '../../Context/NotificationContext';
 import toast from 'react-hot-toast';
 
 const Settings = () => {

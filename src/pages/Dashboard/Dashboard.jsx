@@ -10,11 +10,11 @@ import {
   Target, Weight, Ruler, Medal, Star,
   Gift, Rocket, Battery, Zap as ZapIcon
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../Context/authContext';
 import { useWorkouts } from '../../hooks/useWorkouts';
 import { useNutrition } from '../../hooks/useNutrition';
 import { useProgress } from '../../hooks/useProgress';
-import { useGame } from '../../context/GameContext';
+import { useGame } from '../../Context/GameContext';
 import { motion } from 'framer-motion';
 import { Line, Bar } from 'react-chartjs-2';
 import {
